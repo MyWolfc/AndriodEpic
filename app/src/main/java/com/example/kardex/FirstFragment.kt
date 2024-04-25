@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.kardex.databinding.FragmentFirstBinding
+import kotlin.math.log
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -57,6 +58,7 @@ class FirstFragment : Fragment() {
 
         val adapter = MateriaKardexAdapter{
             onItemClick(it)
+            Log.e("Probando entrada del adaptadro","Todo bien")
         }
         binding.recyclerView.adapter = adapter
         //Log.d("Posisicio",adapter.itemCount.toString())
@@ -67,6 +69,7 @@ class FirstFragment : Fragment() {
             materias?.let {
                 Log.e("Si entro al observer","Materias ${materias.size}")
                 adapter.submitList(it)
+                Log.e("x.x","")
             }
         })
 
@@ -75,19 +78,21 @@ class FirstFragment : Fragment() {
     private fun onItemClick(materiaKardex : MateriaKardex) {
 
 //        val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(0.toString())
-//        findNavController().navigate(action)
-        val bundle = Bundle().apply {
-
-            putString("periodo", materiaKardex.periodo)
-            putString("clave_materia", materiaKardex.claveMateria)
-            putString("materia", materiaKardex.materia)
-            putInt("calificacion", materiaKardex.calificacion)
-        }
+//        val bundle = Bundle().apply {
+//
+//            putString("periodo", materiaKardex.periodo)
+//            putString("clave_materia", materiaKardex.claveMateria)
+//            putString("materia", materiaKardex.materia)
+//            putInt("calificacion", materiaKardex.calificacion)
+//        }
 
 //        val action = FragmentFirstDirections
 //        v.findNavController().navigate(action)
-        val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(materiaKardex.periodo)
-        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment,bundle)
+        Log.e("Verificar el periodo","Periodo ${materiaKardex.claveMateria}")
+        val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(materiaKardex.claveMateria)
+        findNavController().navigate(action)
+
+        //findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment,bundle)
         }
 
     override fun onDestroyView() {

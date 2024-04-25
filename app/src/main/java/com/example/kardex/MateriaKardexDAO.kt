@@ -1,6 +1,7 @@
 package com.example.kardex
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -17,8 +18,12 @@ interface MateriaKardexDAO {
     suspend fun insertAll(m: MateriaKardex)
 
     @Update
-    fun update(m:MateriaKardex)
+    suspend fun update(m:MateriaKardex)
 
+    @Delete
+    suspend fun delete(materiakardex: MateriaKardex)
+    @Query("SELECT * FROM MateriaKardex WHERE clave_materia = :id")
+    suspend fun OnlyOne(id:Int):MateriaKardex?
     @Query("SELECT * FROM MateriaKardex")
     fun getAll() : Flow<List<MateriaKardex>>
 

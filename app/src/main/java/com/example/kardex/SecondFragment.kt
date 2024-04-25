@@ -43,23 +43,32 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val activityContext = requireActivity()
 //        secondFragmentViewModel.registroGuardado.observe(viewLifecycleOwner,true)
-        if (args.periodo.isNotEmpty())
+        if (args.periodo != " ")
         {
             //este nos ayuda a filtrar con un fitro que itera hasta encontrarlo
-            val material_kardex = Singleton.kardex.filter{ x -> x.periodo == args.periodo }.firstOrNull()
-            if(material_kardex != null)
-            {
-                binding.txtCalificacion.setText(material_kardex.calificacion)
-                binding.txtMateria.setText(material_kardex.materia)
-                binding.txtPeriodo.setText(material_kardex.periodo)
-                binding.txtClaveMateria.setText(material_kardex.claveMateria.toString())
+            //val material_kardex = Singleton.kardex.filter{ x -> x.periodo == args.periodo }.firstOrNull()
+            val periodo = args.periodo.toInt()
+            Log.e("ID A PRUEBA ","-XD ${periodo}")
+            val material_kardex = secondFragmentViewModel.conseguirUno(periodo)
+            material_kardex.observe(viewLifecycleOwner){
+                Log.e("MaterialKardex","periodo${it?.periodo},materia${it?.materia}, clave ${it?.claveMateria}")
+                if(it != null)
+                {
 
-                binding.txtClaveMateria.isEnabled = false
+                    binding.txtCalificacion.setText(it.calificacion.toString())
+                    binding.txtMateria.setText(it.materia)
+                    binding.txtPeriodo.setText(it.periodo)
+                    binding.txtClaveMateria.setText(it.claveMateria.toString())
 
+                   // binding.txtClaveMateria.isEnabled = false
+
+                }
             }
+
         }
         binding.btnEliminar.setOnClickListener{
             //Log.d("TAG", "message")
+
 
             val periodoExiste = binding.txtPeriodo.text.toString().isEmpty()
             val clave_materiaExiste = binding.txtClaveMateria.text.toString().isEmpty()
@@ -71,14 +80,14 @@ class SecondFragment : Fragment() {
             }
             else
             {
-                    val periodo = binding.txtPeriodo.text.toString()
+                val periodo = binding.txtPeriodo.text.toString()
                 val clave_materia = binding.txtClaveMateria.text.toString()
                 val materia = binding.txtMateria.text.toString()
                 val calificacionText = binding.txtCalificacion.text.toString()
                 val calificacion = if (calificacionText.isNotBlank()) calificacionText.toInt() else 0
 
-                val materia_kardex = MateriaKardex(periodo, clave_materia, materia, calificacion)
-                val posicionEliminar = Singleton.getItem(materia_kardex)
+                val materia_kardexdelete = MateriaKardex( clave_materia,periodo, materia, calificacion)
+                val posicionEliminar = Singleton.getItem(materia_kardexdelete)
 
                 val builder = AlertDialog.Builder(activityContext)
 
@@ -86,8 +95,8 @@ class SecondFragment : Fragment() {
                 builder.setMessage("Se eliminara este registro. ¿Estás seguro de continuar?")
 
                 builder.setPositiveButton("Aceptar") { dialog, which ->
-                    Singleton.removeItem(posicionEliminar)
-                    Toast.makeText(activityContext, "Por favor, llene todos los campos", Toast.LENGTH_SHORT).show()
+                    val delete = secondFragmentViewModel.matarRegistro(materia_kardexdelete)
+                    Toast.makeText(activityContext, "Se elimino el registro", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
                 }
 
@@ -108,9 +117,14 @@ class SecondFragment : Fragment() {
             val materia = binding.txtMateria.text.toString()
             val calificacionText = binding.txtCalificacion.text.toString()
             val calificacion = if (calificacionText.isNotBlank()) calificacionText.toInt() else 0
-            val materia_kardexadd = MateriaKardex(periodo, clave_materia, materia, calificacion)
-
-            secondFragmentViewModel.insertarMaterialKardex(materia_kardexadd)
+            val materia_kardexadd = MateriaKardex( clave_materia,periodo, materia, calificacion)
+            if (args.periodo == " ")
+            {
+                secondFragmentViewModel.insertarMaterialKardex(materia_kardexadd)
+            }
+            else{
+                secondFragmentViewModel.actualizar(materia_kardexadd)
+            }
 //            val dbHelper = KardexSqlLiteOpenHelper(requireContext())
 //            val db = Room.databaseBuilder(
 //                    requireContext(),
